@@ -10,13 +10,13 @@ YEAR = 2026
 TF_RESOLUTION = "5m"
 BINANCE_URL_FORMAT = \
     "https://data.binance.vision/data/futures/um/monthly/klines/{t}/{tf}/{t}-{tf}-{yyy}-{mon}.zip"
-ZIP_FILENAME_FORMAT = "{}USDT-{}-{}-{}.zip"
-LOCAL_CSV_FORMAT = "{}USDT-{}-{}-{}.csv"
+LOCAL_CSV_FORMAT = "{}-{}-{}-{}.csv"
+FO = "{}-{}-{}-{}.{}"
 
 
-def check_file_exists(ticker: str, ix: int) -> bool:
+def check_file_exists(ticker: Symbol, ix: int) -> bool:
     filename = LOCAL_CSV_FORMAT.format(
-        ticker,
+        ticker.usdt_pair,
         TF_RESOLUTION,
         YEAR,
         str(ix).zfill(2),
@@ -47,11 +47,12 @@ def download_one_file(url: str, filename: str) -> bool:
 
 def download_and_unzip_files(ticker: Symbol) -> None:
     for ii in range(1, 13):
-        zip_fn = ZIP_FILENAME_FORMAT.format(
-            ticker,
+        zip_fn = FO.format(
+            ticker.usdt_pair,
             TF_RESOLUTION,
             YEAR,
             str(ii).zfill(2),
+            "zip",
         )
         dl_res = download_one_file(
             BINANCE_URL_FORMAT.format(
@@ -70,7 +71,7 @@ def download_and_unzip_files(ticker: Symbol) -> None:
 
 def merge_files_into_one(ticker: Symbol) -> None:
     filenames = [
-        LOCAL_CSV_FORMAT.format(ticker, TF_RESOLUTION, YEAR, str(i).zfill(2))
+        LOCAL_CSV_FORMAT.format(ticker.usdt_pair, TF_RESOLUTION, YEAR, str(i).zfill(2))
         for i in range(1, 13) if check_file_exists(ticker, i)
     ]
     print(filenames)
