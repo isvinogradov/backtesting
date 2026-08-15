@@ -13,6 +13,7 @@ RSI_THRESH_LOWER = 20.0
 
 @dataclass(slots=True)
 class CandleBinance:
+    # BASICS
     ts: datetime
     open_: float
     high: float
@@ -20,6 +21,7 @@ class CandleBinance:
     close: float
     volume: float
 
+    # INDICATORS
     rsi: float | None = None
     rsi_ma: float | None = None
     rvol: float | None = None
@@ -90,7 +92,6 @@ class CandleBinance:
         raise RuntimeError("Unknown price state")
 
     def is_green(self) -> bool:
-        """ Candle color """
         return self.close > self.open_
 
     @property
@@ -102,14 +103,3 @@ class CandleBinance:
         if self.rsi is None:
             return False
         return self.rsi <= RSI_THRESH_LOWER or self.rsi >= RSI_THRESH_UPPER
-
-    @property
-    def clv(self) -> float:
-        candle_range = self.high - self.low
-        if candle_range == 0:
-            return 0.5
-        return (self.close - self.low) / candle_range
-
-    @property
-    def impulse_pct(self) -> float:
-        return 100.0 * abs(self.close - self.open_) / self.open_
