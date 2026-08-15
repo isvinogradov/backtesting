@@ -11,7 +11,7 @@ TF_RESOLUTION = "5m"
 BINANCE_URL_FORMAT = \
     "https://data.binance.vision/data/futures/um/monthly/klines/{t}/{tf}/{t}-{tf}-{yyy}-{mon}.zip"
 LOCAL_CSV_FORMAT = "{}-{}-{}-{}.csv"
-FO = "{}-{}-{}-{}.{}"
+FILE_FORMAT = "{sym}-{timeframe}-{yyyy}-{num}.{ext}"
 
 
 def check_file_exists(ticker: Symbol, ix: int) -> bool:
@@ -47,12 +47,12 @@ def download_one_file(url: str, filename: str) -> bool:
 
 def download_and_unzip_files(ticker: Symbol) -> None:
     for ii in range(1, 13):
-        zip_fn = FO.format(
-            ticker.usdt_pair,
-            TF_RESOLUTION,
-            YEAR,
-            str(ii).zfill(2),
-            "zip",
+        zip_file_name = FILE_FORMAT.format(
+            sym=ticker.usdt_pair,
+            timeframe=TF_RESOLUTION,
+            yyyy=YEAR,
+            num=str(ii).zfill(2),
+            ext="zip",
         )
         dl_res = download_one_file(
             BINANCE_URL_FORMAT.format(
@@ -61,12 +61,12 @@ def download_and_unzip_files(ticker: Symbol) -> None:
                 yyy=YEAR,
                 mon=str(ii).zfill(2),
             ),
-            zip_fn,
+            zip_file_name,
         )
         if dl_res:
-            shutil.unpack_archive(zip_fn)
-            os.remove(zip_fn)
-            print(f"Removed: {zip_fn}")
+            shutil.unpack_archive(zip_file_name)
+            os.remove(zip_file_name)
+            print(f"Removed: {zip_file_name}")
 
 
 def merge_files_into_one(ticker: Symbol) -> None:
