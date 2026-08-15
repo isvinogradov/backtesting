@@ -63,6 +63,9 @@ class CandleBinance:
             ")"
         )
 
+    def __repr__(self) -> str:
+        return f"{self.ts}|o {self.open_}|h {self.high}|c {self.close}"
+
     @property
     def price_relative_to_vwap(self) -> int:
         price = self.close
@@ -77,6 +80,14 @@ class CandleBinance:
         if self.vwap_mid < self.close <= self.vwap_top:
             return 4
         raise RuntimeError("Unknown price state")
+
+    def is_green(self) -> bool:
+        """ Candle color """
+        return self.close > self.open_
+
+    @property
+    def is_full_body(self) -> bool:
+        return abs(self.close - self.open_) == abs(self.high - self.low)
 
     @property
     def is_extreme(self) -> bool:
