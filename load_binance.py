@@ -80,7 +80,6 @@ def merge_files_into_one(ticker: Symbol) -> None:
         )
         for i in range(1, 13) if check_file_exists(ticker, i)
     ]
-    print(filenames)
     df = pd.concat(
         map(pd.read_csv, filenames),
         ignore_index=True,
