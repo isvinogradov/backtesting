@@ -20,3 +20,20 @@ class Outcome(StrEnum):
 class RsiCross(StrEnum):
     UP = "up"
     DOWN = "down"
+
+
+class Symbol(StrEnum):
+    """ Perps only! USDT only! """
+
+    BTC = "BTC"
+    ETH = "ETH"
+    DOGE = "DOGE"
+    XAU = "XAU"
+
+    @property
+    def usdt_pair(self) -> str:
+        return f"{self}USDT"
+
+    @property
+    def okx_repr(self) -> str:
+        return f"{self}-USDT-SWAP"

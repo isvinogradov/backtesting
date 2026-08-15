@@ -4,6 +4,8 @@ import shutil
 import pandas as pd
 import requests
 
+from shared.enums import Symbol
+
 YEAR = 2026
 TF_RESOLUTION = "5m"
 BINANCE_URL_FORMAT = \
@@ -43,7 +45,7 @@ def download_one_file(url: str, filename: str) -> bool:
         return False
 
 
-def download_and_unzip_files(ticker: str) -> None:
+def download_and_unzip_files(ticker: Symbol) -> None:
     for ii in range(1, 13):
         zip_fn = ZIP_FILENAME_FORMAT.format(
             ticker,
@@ -53,7 +55,7 @@ def download_and_unzip_files(ticker: str) -> None:
         )
         dl_res = download_one_file(
             BINANCE_URL_FORMAT.format(
-                t=ticker + "USDT",
+                t=ticker.usdt_pair,
                 tf=TF_RESOLUTION,
                 yyy=YEAR,
                 mon=str(ii).zfill(2),
@@ -66,7 +68,7 @@ def download_and_unzip_files(ticker: str) -> None:
             print(f"Removed: {zip_fn}")
 
 
-def merge_files_into_one(ticker: str) -> None:
+def merge_files_into_one(ticker: Symbol) -> None:
     filenames = [
         LOCAL_CSV_FORMAT.format(ticker, TF_RESOLUTION, YEAR, str(i).zfill(2))
         for i in range(1, 13) if check_file_exists(ticker, i)
@@ -94,8 +96,8 @@ def merge_files_into_one(ticker: str) -> None:
 
 
 if __name__ == '__main__':
-    tickers = {
-        "BTC",
+    tickers: set[Symbol] = {
+        Symbol.BTC,
     }
     for t in tickers:
         print(f" LOADING {t} ".center(80, "*"))
