@@ -2,3 +2,6 @@ flet
 aiohttp
 websockets
 ujson
+pandas
+
+pandas-stubs
