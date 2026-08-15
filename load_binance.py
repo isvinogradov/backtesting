@@ -14,7 +14,7 @@ LOCAL_CSV_FORMAT = "{}USDT-{}-{}-{}.csv"
 
 def check_file_exists(ticker: str, ix: int) -> bool:
     filename = LOCAL_CSV_FORMAT.format(
-        ticker[:-4],
+        ticker,
         TF_RESOLUTION,
         YEAR,
         str(ix).zfill(2),
@@ -46,14 +46,14 @@ def download_one_file(url: str, filename: str) -> bool:
 def download_and_unzip_files(ticker: str) -> None:
     for ii in range(1, 13):
         zip_fn = ZIP_FILENAME_FORMAT.format(
-            ticker[:-4],
+            ticker,
             TF_RESOLUTION,
             YEAR,
             str(ii).zfill(2),
         )
         dl_res = download_one_file(
             BINANCE_URL_FORMAT.format(
-                t=ticker,
+                t=ticker + "USDT",
                 tf=TF_RESOLUTION,
                 yyy=YEAR,
                 mon=str(ii).zfill(2),
@@ -68,9 +68,10 @@ def download_and_unzip_files(ticker: str) -> None:
 
 def merge_files_into_one(ticker: str) -> None:
     filenames = [
-        LOCAL_CSV_FORMAT.format(ticker[:-4], TF_RESOLUTION, YEAR, str(i).zfill(2))
-        for i in range(1, 13) if check_file_exists(t, i)
+        LOCAL_CSV_FORMAT.format(ticker, TF_RESOLUTION, YEAR, str(i).zfill(2))
+        for i in range(1, 13) if check_file_exists(ticker, i)
     ]
+    print(filenames)
     df = pd.concat(
         map(pd.read_csv, filenames),
         ignore_index=True,
@@ -78,7 +79,7 @@ def merge_files_into_one(ticker: str) -> None:
     df.open_time *= (1 / 1000)
     df.open_time = df.open_time.astype(int)
 
-    new_filename = f"{ticker[:-4].lower()}_data_{YEAR}_{TF_RESOLUTION}.csv"
+    new_filename = f"{ticker.lower()}_data_{YEAR}_{TF_RESOLUTION}.csv"
     df.to_csv(
         new_filename,
         index=False,
@@ -94,11 +95,11 @@ def merge_files_into_one(ticker: str) -> None:
 
 if __name__ == '__main__':
     tickers = {
-        "BTCUSDT",
+        "BTC",
     }
     for t in tickers:
-        print(f" LOADING {t[:-4]} ".center(80, "*"))
+        print(f" LOADING {t} ".center(80, "*"))
         download_and_unzip_files(t)
         merge_files_into_one(t)
-        print(f" {t[:-4]} - DONE ".center(80, "*"))
+        print(f" {t} - DONE ".center(80, "*"))
         print()
