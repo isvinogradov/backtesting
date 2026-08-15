@@ -6,11 +6,19 @@ import requests
 
 YEAR = 2026
 TF_RESOLUTION = "5m"
-FF = "{}USDT-{}-{}-{}.csv"
+BINANCE_URL_FORMAT = \
+    "https://data.binance.vision/data/futures/um/monthly/klines/{t}/{tf}/{t}-{tf}-{yyy}-{mon}.zip"
+ZIP_FILENAME_FORMAT = "{}USDT-{}-{}-{}.zip"
+LOCAL_CSV_FORMAT = "{}USDT-{}-{}-{}.csv"
 
 
 def check_file_exists(ticker: str, ix: int) -> bool:
-    filename = FF.format(ticker[:-4], TF_RESOLUTION, YEAR, str(ix).zfill(2))
+    filename = LOCAL_CSV_FORMAT.format(
+        ticker[:-4],
+        TF_RESOLUTION,
+        YEAR,
+        str(ix).zfill(2),
+    )
     exists = os.path.isfile(filename)
     if exists:
         return True
@@ -36,12 +44,15 @@ def download_one_file(url: str, filename: str) -> bool:
 
 
 def download_and_unzip_files(ticker: str) -> None:
-    binance_url_f = "https://data.binance.vision/data/futures/um/monthly/klines/{t}/{tf}/{t}-{tf}-{yyy}-{mon}.zip"
-    fn_f = "{}USDT-{}-{}-{}.zip"
     for ii in range(1, 13):
-        zip_fn = fn_f.format(ticker[:-4], TF_RESOLUTION, YEAR, str(ii).zfill(2))
+        zip_fn = ZIP_FILENAME_FORMAT.format(
+            ticker[:-4],
+            TF_RESOLUTION,
+            YEAR,
+            str(ii).zfill(2),
+        )
         dl_res = download_one_file(
-            binance_url_f.format(
+            BINANCE_URL_FORMAT.format(
                 t=ticker,
                 tf=TF_RESOLUTION,
                 yyy=YEAR,
@@ -56,8 +67,10 @@ def download_and_unzip_files(ticker: str) -> None:
 
 
 def merge_files_into_one(ticker: str) -> None:
-    filenames = [FF.format(ticker[:-4], TF_RESOLUTION, YEAR, str(i).zfill(2))
-                 for i in range(1, 13) if check_file_exists(t, i)]
+    filenames = [
+        LOCAL_CSV_FORMAT.format(ticker[:-4], TF_RESOLUTION, YEAR, str(i).zfill(2))
+        for i in range(1, 13) if check_file_exists(t, i)
+    ]
     df = pd.concat(
         map(pd.read_csv, filenames),
         ignore_index=True,
@@ -81,7 +94,7 @@ def merge_files_into_one(ticker: str) -> None:
 
 if __name__ == '__main__':
     tickers = {
-        Ticker.BTC,
+        "BTCUSDT",
     }
     for t in tickers:
         print(f" LOADING {t[:-4]} ".center(80, "*"))
