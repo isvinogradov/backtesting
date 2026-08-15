@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from enum import StrEnum
 from typing import Iterable
 
 from main import RsiCross, LOCAL_TZ, RSI_THRESH_LOWER, RSI_THRESH_UPPER
@@ -91,3 +92,16 @@ class CandleBinance:
     @property
     def impulse_pct(self) -> float:
         return 100.0 * abs(self.close - self.open_) / self.open_
+
+
+class Side(StrEnum):
+    LONG = "LONG"
+    SHORT = "SHORT"
+
+
+class Outcome(StrEnum):
+    TP = "TP"
+    SL = "SL"
+    TIME = "TIME"
+    END = "END"
+    AMBIGUOUS = "AMBIGUOUS"

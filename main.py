@@ -6,7 +6,7 @@ from statistics import mean, median
 from typing import Sequence
 from zoneinfo import ZoneInfo
 
-from shared.enums import CandleBinance
+from shared.enums import CandleBinance, Side, Outcome
 from shared.functions import load_candles_from_csv
 
 # ---------------------------------------------------------------------------
@@ -41,25 +41,10 @@ OTHER_EXIT_FEE_BPS = 4.0
 ONE_POSITION_AT_A_TIME = True
 PRINT_TRADES = True
 
-CSV_PATH = Path(f"{Ticker.BTC[:-4].lower()}_data_2026_5m.csv")
-
-
-class Side(StrEnum):
-    LONG = "LONG"
-    SHORT = "SHORT"
-
 
 class RsiCross(StrEnum):
     UP = "up"
     DOWN = "down"
-
-
-class Outcome(StrEnum):
-    TP = "TP"
-    SL = "SL"
-    TIME = "TIME"
-    END = "END"
-    AMBIGUOUS = "AMBIGUOUS"
 
 
 @dataclass(frozen=True, slots=True)
@@ -430,7 +415,7 @@ def print_summary(
         )
 
 
-def main() -> None:
+def main(csv_path: Path) -> None:
     if REWARD_RISK <= 0:
         raise ValueError("REWARD_RISK must be greater than zero")
     if TIME_CAP_CANDLES is not None and TIME_CAP_CANDLES <= 0:
@@ -438,7 +423,7 @@ def main() -> None:
     if min(ENTRY_FEE_BPS, TP_EXIT_FEE_BPS, OTHER_EXIT_FEE_BPS) < 0:
         raise ValueError("Fee rates cannot be negative")
 
-    candles = load_candles_from_csv(CSV_PATH)
+    candles = load_candles_from_csv(csv_path)
     signals = detect_signals(candles)
     trades, invalid_target_count, open_position_count = run_backtest(
         candles,
@@ -459,4 +444,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    csv_loc = Path(f"{Ticker.BTC[:-4].lower()}_data_2026_5m.csv")
+    main(csv_loc)
