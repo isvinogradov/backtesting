@@ -18,7 +18,12 @@ class CandleBinance:
     close: float
     volume: float
 
-    # INDICATORS
+    # GENERAL INFO
+    source: str
+    symbol: str
+    tf: str
+
+    # INDICATORS (populated after init)
     rsi: float | None = None
     rsi_ma: float | None = None
     rvol: float | None = None
@@ -51,6 +56,9 @@ class CandleBinance:
             low=float(low),
             close=float(close),
             volume=float(volume),
+            source=source,
+            symbol=symbol,
+            tf=tf,
         )
 
     def __str__(self) -> str:
