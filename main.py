@@ -5,7 +5,8 @@ from statistics import mean, median
 from typing import Sequence
 from zoneinfo import ZoneInfo
 
-from shared.enums import CandleBinance, Side, Outcome, RsiCross
+from shared.candle import CandleBinance
+from shared.enums import Side, Outcome, RsiCross
 from shared.functions import load_candles_from_csv
 
 # ---------------------------------------------------------------------------

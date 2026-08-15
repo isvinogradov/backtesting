@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from shared.enums import CandleBinance
+from shared.candle import CandleBinance
 
 # datetime short format
 DT_SHORT = "%d.%m.%Y %H:%M:%S"
@@ -17,7 +17,7 @@ def load_candles_from_csv(filename: Path) -> list[CandleBinance]:
         raise ValueError("CSV must contain at least six OHLCV columns")
 
     candles = [
-        CandleBinance.from_raw(raw)
+        CandleBinance.from_raw(raw, source="Binance")
         for raw in frame.iloc[:, :6].itertuples(index=False, name=None)
     ]
 
