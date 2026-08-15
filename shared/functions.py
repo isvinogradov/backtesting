@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from shared.enums import CandleBinance
+
 # datetime short format
 DT_SHORT = "%d.%m.%Y %H:%M:%S"
 VWAP_BAND_MULTIPLIER = 1.0
@@ -131,29 +133,6 @@ def rsi_rvol_sma_from_candles(
         fast_rvol(volumes, 20),
         calc_rsi_sma(closes, 14),
     )
-
-
-def ema(
-        values: list[float],
-        period: int,
-) -> list[float | None]:
-    """
-    Exponential Moving Average with alpha=2/(n+1).
-    None until enough data
-    """
-    n = len(values)
-    if period <= 0 or n == 0:
-        return [None] * n
-    k = 2.0 / (period + 1.0)
-    out: list[float | None] = [None] * n
-    if n < period:
-        return out
-    sma = sum(values[:period]) / period
-    out[period - 1] = sma
-    for i in range(period, n):
-        prev = out[i - 1] if out[i - 1] is not None else values[i - 1]
-        out[i] = values[i] * k + prev * (1.0 - k)
-    return out
 
 
 def calc_rsi(
@@ -303,40 +282,6 @@ def calc_vwap_bands(
         lower.append(vwap - band_mult * std_dev)
 
     return middle, upper, lower
-
-
-def sma(
-        arr: list[float],
-        n: int,
-) -> list[float | None]:
-    """
-    Return simple moving average per index; None
-    until enough data.
-    """
-    if n <= 0 or len(arr) < n:
-        return [None] * len(arr)
-    out = [None] * (n - 1)
-    s = sum(arr[:n])
-    out.append(s / n)
-    for k in range(n, len(arr)):
-        s += arr[k] - arr[k - n]
-        out.append(s / n)
-    return out
-
-
-def rvol_series(
-        vol: list[float],
-        n: int = 20,
-) -> list[float | None]:
-    """
-    Return relative volume = volume / SMA(volume, n)
-    per bar; None where undefined.
-    """
-    ma = sma(vol, n)
-    return [
-        (vol[i] / ma[i]) if (ma[i] not in (None, 0)) else None
-        for i in range(len(vol))
-    ]
 
 
 def fast_rvol(
