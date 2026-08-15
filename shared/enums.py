@@ -4,8 +4,12 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Iterable
+from zoneinfo import ZoneInfo
 
-from main import RsiCross, LOCAL_TZ, RSI_THRESH_LOWER, RSI_THRESH_UPPER
+LOCAL_TZ = ZoneInfo("Asia/Nicosia")
+
+RSI_THRESH_UPPER = 80.0
+RSI_THRESH_LOWER = 20.0
 
 
 @dataclass(slots=True)
@@ -105,3 +109,8 @@ class Outcome(StrEnum):
     TIME = "TIME"
     END = "END"
     AMBIGUOUS = "AMBIGUOUS"
+
+
+class RsiCross(StrEnum):
+    UP = "up"
+    DOWN = "down"

@@ -1,12 +1,11 @@
 from collections import Counter, defaultdict
 from dataclasses import dataclass
-from enum import StrEnum
 from pathlib import Path
 from statistics import mean, median
 from typing import Sequence
 from zoneinfo import ZoneInfo
 
-from shared.enums import CandleBinance, Side, Outcome
+from shared.enums import CandleBinance, Side, Outcome, RsiCross
 from shared.functions import load_candles_from_csv
 
 # ---------------------------------------------------------------------------
@@ -40,11 +39,6 @@ OTHER_EXIT_FEE_BPS = 4.0
 
 ONE_POSITION_AT_A_TIME = True
 PRINT_TRADES = True
-
-
-class RsiCross(StrEnum):
-    UP = "up"
-    DOWN = "down"
 
 
 @dataclass(frozen=True, slots=True)
@@ -444,5 +438,5 @@ def main(csv_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    csv_loc = Path(f"{Ticker.BTC[:-4].lower()}_data_2026_5m.csv")
+    csv_loc = Path("btc_data_2026_5m.csv")
     main(csv_loc)
