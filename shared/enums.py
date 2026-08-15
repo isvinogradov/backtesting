@@ -27,8 +27,13 @@ class Symbol(StrEnum):
 
     BTC = "BTC"
     ETH = "ETH"
+    SOL = "SOL"
     DOGE = "DOGE"
     XAU = "XAU"
+    BNB = "BNB"
+    XPL = "XPL"
+    XRP = "XRP"
+    AVAX = "AVAX"
 
     @property
     def usdt_pair(self) -> str:
