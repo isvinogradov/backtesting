@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from shared.candle import CandleBinance
+from shared.enums import RsiCross, Symbol
 
 # datetime short format
 DT_SHORT = "%d.%m.%Y %H:%M:%S"
@@ -17,7 +18,7 @@ def load_candles_from_csv(filename: Path) -> list[CandleBinance]:
         raise ValueError("CSV must contain at least six OHLCV columns")
 
     candles = [
-        CandleBinance.from_raw(raw, source="Binance")
+        CandleBinance.from_raw(raw, source="Binance", symbol=Symbol.BTC, tf="5m")
         for raw in frame.iloc[:, :6].itertuples(index=False, name=None)
     ]
 

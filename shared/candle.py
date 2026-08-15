@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Iterable
 
-from shared.enums import RsiCross, LOCAL_TZ
+from shared.enums import RsiCross, LOCAL_TZ, Symbol
 
 RSI_THRESH_UPPER = 80.0
 RSI_THRESH_LOWER = 20.0
@@ -20,7 +20,7 @@ class CandleBinance:
 
     # GENERAL INFO
     source: str
-    symbol: str
+    symbol: Symbol
     tf: str
 
     # INDICATORS (populated after init)
@@ -38,7 +38,7 @@ class CandleBinance:
             raw: Iterable[object],
             *,
             source: str,
-            symbol: str = "BTC",
+            symbol: Symbol,
             tf: str = "5m",
     ) -> CandleBinance:
         unix_time_raw, open_, high, low, close, volume = raw
