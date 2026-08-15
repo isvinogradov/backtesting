@@ -3,17 +3,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from statistics import mean, median
 from typing import Sequence
-from zoneinfo import ZoneInfo
 
 from shared.candle import CandleBinance
-from shared.enums import Side, Outcome, RsiCross
+from shared.enums import Side, Outcome, RsiCross, LOCAL_TZ
 from shared.functions import load_candles_from_csv
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
-LOCAL_TZ = ZoneInfo("Asia/Nicosia")
 CANDLE_MINUTES = 5
 
 RSI_THRESH_UPPER = 80.0

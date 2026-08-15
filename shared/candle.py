@@ -1,11 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Iterable
-from zoneinfo import ZoneInfo
 
-from shared.enums import RsiCross
-
-LOCAL_TZ = ZoneInfo("Asia/Nicosia")
+from shared.enums import RsiCross, LOCAL_TZ
 
 RSI_THRESH_UPPER = 80.0
 RSI_THRESH_LOWER = 20.0
