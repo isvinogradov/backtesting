@@ -2,6 +2,7 @@ import os
 import shutil
 
 import pandas as pd
+import requests
 
 YEAR = 2026
 TF_RESOLUTION = "5m"
@@ -18,7 +19,7 @@ def check_file_exists(ticker: str, ix: int) -> bool:
         return False
 
 
-def single_file_dl(url: str, filename: str) -> bool:
+def download_one_file(url: str, filename: str) -> bool:
     r = requests.get(url, stream=True)
     if r.ok:
         print(f"Saving to: {os.path.abspath(filename)}")
@@ -39,7 +40,7 @@ def download_and_unzip_files(ticker: str) -> None:
     fn_f = "{}USDT-{}-{}-{}.zip"
     for ii in range(1, 13):
         zip_fn = fn_f.format(ticker[:-4], TF_RESOLUTION, YEAR, str(ii).zfill(2))
-        dl_res = single_file_dl(
+        dl_res = download_one_file(
             binance_url_f.format(
                 t=ticker,
                 tf=TF_RESOLUTION,
@@ -81,13 +82,6 @@ def merge_files_into_one(ticker: str) -> None:
 if __name__ == '__main__':
     tickers = {
         Ticker.BTC,
-        Ticker.XAU,
-        # Ticker.ETH,
-        # Ticker.DOGE,
-        # Ticker.BNB,
-        # Ticker.AVAX,
-        # Ticker.SOL,
-        # Ticker.XRP,
     }
     for t in tickers:
         print(f" LOADING {t[:-4]} ".center(80, "*"))
