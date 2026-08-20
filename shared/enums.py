@@ -35,6 +35,8 @@ class Symbol(StrEnum):
     XPL = "XPL"
     XRP = "XRP"
     AVAX = "AVAX"
+    TAO = "TAO"
+    HYPE = "HYPE"
 
     @property
     def usdt_pair(self) -> str:
