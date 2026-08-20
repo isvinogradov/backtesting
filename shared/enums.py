@@ -9,6 +9,17 @@ class Side(StrEnum):
     LONG = "LONG"
     SHORT = "SHORT"
 
+    @property
+    def is_long(self) -> bool:
+        return self == Side.LONG
+
+    @property
+    def is_short(self) -> bool:
+        return not self.is_long
+
+    def bybit(self) -> str:
+        return "Buy" if self.is_long else "Sell"
+
 
 class Outcome(StrEnum):
     TP = "TP"

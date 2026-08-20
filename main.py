@@ -20,9 +20,9 @@ RSI_THRESH_UPPER = 80.0
 RSI_THRESH_LOWER = 20.0
 
 REWARD_RISK = 1.2
-ALLOWED_SIDES = {
-    "LONG",
-    # "SHORT",
+ALLOWED_SIDES: set[Side] = {
+    Side.LONG,
+    # Side.SHORT,
 }
 
 # Set to None for an uncapped run. On 5-minute data, 288 candles is 24 hours.
@@ -150,7 +150,7 @@ def detect_signals(candles: Sequence[Candle]) -> list[Signal]:
             signal_side = Side.SHORT
 
         if signal_side is not None:
-            if signal_side.value in ALLOWED_SIDES:
+            if signal_side in ALLOWED_SIDES:
                 if setup_ix is None:
                     raise AssertionError("Pending setup is missing its index")
                 signals.append(Signal(i, setup_ix, signal_side))
