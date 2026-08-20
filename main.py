@@ -4,9 +4,10 @@ from pathlib import Path
 from statistics import mean, median
 from typing import Sequence
 
-from shared.candle import Candle
-from shared.enums import Side, Outcome, RsiCross, LOCAL_TZ, Band
-from shared.functions import load_candles_from_csv
+import pandas as pd
+
+from shared.candle import CandleSet, Candle
+from shared.enums import Symbol, Side, Outcome, RsiCross, LOCAL_TZ, Band
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -39,6 +40,28 @@ OTHER_EXIT_FEE_BPS = 4.0
 
 ONE_POSITION_AT_A_TIME = True
 PRINT_TRADES = True
+
+
+def load_candles_from_csv(
+        filename: str | Path,
+        rsi_band: Band | None = None,
+) -> list[Candle]:
+    """
+    Convert raw data from .csv file to Python list.
+    :param filename: .csv file to use
+    :param rsi_band: rsi band to use
+    :return: list of candle objects
+    """
+    df = pd.read_csv(filename)
+    rows = [x for _, x in df.iterrows()]
+    cs = CandleSet.from_raw(
+        rows,
+        "Binance",
+        symbol=Symbol.BTC,
+        tf="5",
+        rsi_band=rsi_band,
+    )
+    return cs.candles
 
 
 @dataclass(frozen=True, slots=True)

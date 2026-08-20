@@ -1,92 +1,64 @@
 import math
 from collections.abc import Callable, Hashable
-from pathlib import Path
-
-import pandas as pd
-
-from shared.candle import Candle, CandleSet
-from shared.enums import RsiCross, Symbol, Band
 
 # datetime short format
 DT_SHORT = "%d.%m.%Y %H:%M:%S"
 VWAP_BAND_MULTIPLIER = 1.0
 
 
-def load_candles_from_csv(
-        filename: str | Path,
-        rsi_band: Band | None = None,
-) -> list[Candle]:
-    """
-    Convert raw data from .csv file to Python list.
-    :param filename: .csv file to use
-    :param rsi_band: rsi band to use
-    :return: list of candle objects
-    """
-    df = pd.read_csv(filename)
-    rows = [x for _, x in df.iterrows()]
-    cs = CandleSet.from_raw(
-        rows,
-        "Binance",
-        symbol=Symbol.BTC,
-        tf="5",
-        rsi_band=rsi_band,
-    )
-    return cs.candles
-
-
-def load_candles_from_csv_old(filename: Path) -> list[Candle]:
-    frame = pd.read_csv(filename)
-    if frame.shape[1] < 6:
-        raise ValueError("CSV must contain at least six OHLCV columns")
-
-    candles = [
-        Candle.from_raw(raw, source="Binance", symbol=Symbol.BTC, tf="5m")
-        for raw in frame.iloc[:, :6].itertuples(index=False, name=None)
-    ]
-
-    if not candles:
-        raise ValueError("CSV contains no candles")
-
-    if any(a.ts >= b.ts for a, b in zip(candles, candles[1:])):
-        raise ValueError("Candles must be strictly sorted by timestamp")
-
-    rsi_series, rvol_series, rsi_ma_series = (
-        rsi_rvol_sma_from_candles(candles)
-    )
-
-    vwap_mid, vwap_top, vwap_bottom = calc_vwap_bands(
-        candles,
-        VWAP_BAND_MULTIPLIER,
-        session_key=lambda candle: candle.ts.date(),
-    )
-
-    for i, candle in enumerate(candles):
-        candle.rsi = rsi_series[i]
-        candle.rvol = rvol_series[i]
-        candle.rsi_ma = rsi_ma_series[i]
-        candle.vwap_top = vwap_top[i]
-        candle.vwap_mid = vwap_mid[i]
-        candle.vwap_bottom = vwap_bottom[i]
-
-        # Do not use candles[-1] as the previous candle when i == 0.
-        if i == 0:
-            continue
-
-        previous = candles[i - 1]
-        if (
-                previous.rsi is None
-                or previous.rsi_ma is None
-                or candle.rsi is None
-                or candle.rsi_ma is None
-        ):
-            continue
-
-        if previous.rsi <= previous.rsi_ma and candle.rsi > candle.rsi_ma:
-            candle.rsi_cross = RsiCross.UP
-        elif previous.rsi >= previous.rsi_ma and candle.rsi < candle.rsi_ma:
-            candle.rsi_cross = RsiCross.DOWN
-
-    return candles
+# def load_candles_from_csv_old(filename: Path) -> list:
+#     frame = pd.read_csv(filename)
+#     if frame.shape[1] < 6:
+#         raise ValueError("CSV must contain at least six OHLCV columns")
+#
+#     candles = [
+#         Candle.from_raw(raw, source="Binance", symbol=Symbol.BTC, tf="5m")
+#         for raw in frame.iloc[:, :6].itertuples(index=False, name=None)
+#     ]
+#
+#     if not candles:
+#         raise ValueError("CSV contains no candles")
+#
+#     if any(a.ts >= b.ts for a, b in zip(candles, candles[1:])):
+#         raise ValueError("Candles must be strictly sorted by timestamp")
+#
+#     rsi_series, rvol_series, rsi_ma_series = (
+#         rsi_rvol_sma_from_candles(candles)
+#     )
+#
+#     vwap_mid, vwap_top, vwap_bottom = calc_vwap_bands(
+#         candles,
+#         VWAP_BAND_MULTIPLIER,
+#         session_key=lambda candle: candle.ts.date(),
+#     )
+#
+#     for i, candle in enumerate(candles):
+#         candle.rsi = rsi_series[i]
+#         candle.rvol = rvol_series[i]
+#         candle.rsi_ma = rsi_ma_series[i]
+#         candle.vwap_top = vwap_top[i]
+#         candle.vwap_mid = vwap_mid[i]
+#         candle.vwap_bottom = vwap_bottom[i]
+#
+#         # Do not use candles[-1] as the previous candle when i == 0.
+#         if i == 0:
+#             continue
+#
+#         previous = candles[i - 1]
+#         if (
+#                 previous.rsi is None
+#                 or previous.rsi_ma is None
+#                 or candle.rsi is None
+#                 or candle.rsi_ma is None
+#         ):
+#             continue
+#
+#         if previous.rsi <= previous.rsi_ma and candle.rsi > candle.rsi_ma:
+#             candle.rsi_cross = RsiCross.UP
+#         elif previous.rsi >= previous.rsi_ma and candle.rsi < candle.rsi_ma:
+#             candle.rsi_cross = RsiCross.DOWN
+#
+#     return candles
 
 
 def calc_rsi_sma(
@@ -200,9 +172,9 @@ def calc_rsi(
 
 
 def calc_vwap_bands(
-        candles: list[Candle],
+        candles: list,  # Candle class
         band_mult: float = 2.0,
-        session_key: Callable[[Candle], Hashable] | None = None,
+        session_key: Callable | None = None,
 ) -> tuple[
     list[float | None],
     list[float | None],
