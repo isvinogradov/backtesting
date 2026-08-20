@@ -4,21 +4,43 @@ from pathlib import Path
 
 import pandas as pd
 
-from shared.candle import CandleBinance
-from shared.enums import RsiCross, Symbol
+from shared.candle import Candle, CandleSet
+from shared.enums import RsiCross, Symbol, Band
 
 # datetime short format
 DT_SHORT = "%d.%m.%Y %H:%M:%S"
 VWAP_BAND_MULTIPLIER = 1.0
 
 
-def load_candles_from_csv(filename: Path) -> list[CandleBinance]:
+def load_candles_from_csv(
+        filename: str,
+        rsi_band: Band | None = None,
+) -> list[Candle]:
+    """
+    Convert raw data from .csv file to Python list.
+    :param filename: .csv file to use
+    :param rsi_band: rsi band to use
+    :return: list of candle objects
+    """
+    df = pd.read_csv(filename)
+    rows = [x for _, x in df.iterrows()]
+    cs = CandleSet.from_raw(
+        rows,
+        "Binance",
+        symbol=Symbol.BTC,
+        tf="5",
+        rsi_band=rsi_band,
+    )
+    return cs.candles
+
+
+def load_candles_from_csv_old(filename: Path) -> list[Candle]:
     frame = pd.read_csv(filename)
     if frame.shape[1] < 6:
         raise ValueError("CSV must contain at least six OHLCV columns")
 
     candles = [
-        CandleBinance.from_raw(raw, source="Binance", symbol=Symbol.BTC, tf="5m")
+        Candle.from_raw(raw, source="Binance", symbol=Symbol.BTC, tf="5m")
         for raw in frame.iloc[:, :6].itertuples(index=False, name=None)
     ]
 
