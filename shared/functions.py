@@ -13,7 +13,7 @@ VWAP_BAND_MULTIPLIER = 1.0
 
 
 def load_candles_from_csv(
-        filename: str,
+        filename: str | Path,
         rsi_band: Band | None = None,
 ) -> list[Candle]:
     """
