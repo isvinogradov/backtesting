@@ -4,8 +4,8 @@ from pathlib import Path
 from statistics import mean, median
 from typing import Sequence
 
-from shared.candle import CandleBinance
-from shared.enums import Side, Outcome, RsiCross, LOCAL_TZ
+from shared.candle import Candle
+from shared.enums import Side, Outcome, RsiCross, LOCAL_TZ, Band
 from shared.functions import load_candles_from_csv
 
 # ---------------------------------------------------------------------------
@@ -14,6 +14,7 @@ from shared.functions import load_candles_from_csv
 
 CANDLE_MINUTES = 5
 
+RSI_BAND = Band(20.0, 80.0)
 RSI_THRESH_UPPER = 80.0
 RSI_THRESH_LOWER = 20.0
 
@@ -102,7 +103,7 @@ class Trade:
         return gross_r - fees_per_unit / self.risk_per_unit
 
 
-def detect_signals(candles: Sequence[CandleBinance]) -> list[Signal]:
+def detect_signals(candles: Sequence[Candle]) -> list[Signal]:
     """
     Detect signals using completed candles only.
 
@@ -147,7 +148,7 @@ def detect_signals(candles: Sequence[CandleBinance]) -> list[Signal]:
 
 
 def prices_for_signal(
-        candle: CandleBinance,
+        candle: Candle,
         side: Side,
 ) -> tuple[float, float, float] | None:
     entry = candle.close
@@ -171,7 +172,7 @@ def prices_for_signal(
 
 
 def assess_trade(
-        candles: Sequence[CandleBinance],
+        candles: Sequence[Candle],
         signal: Signal,
         entry_price: float,
         tp_price: float,
@@ -234,7 +235,7 @@ def assess_trade(
 
 
 def run_backtest(
-        candles: Sequence[CandleBinance],
+        candles: Sequence[Candle],
         signals: Sequence[Signal],
 ) -> tuple[list[Trade], int, int]:
     trades: list[Trade] = []
@@ -282,7 +283,7 @@ def maximum_streak(r_values: Sequence[float], *, winning: bool) -> int:
     return longest
 
 
-def print_trade(trade: Trade, candles: Sequence[CandleBinance]) -> None:
+def print_trade(trade: Trade, candles: Sequence[Candle]) -> None:
     entry_candle = candles[trade.signal.entry_ix]
     setup_candle = candles[trade.signal.setup_ix]
     gross_r = trade.r_multiple
@@ -306,7 +307,7 @@ def print_trade(trade: Trade, candles: Sequence[CandleBinance]) -> None:
 
 
 def print_summary(
-        candles: Sequence[CandleBinance],
+        candles: Sequence[Candle],
         trades: Sequence[Trade],
         *,
         signal_count: int,
@@ -416,7 +417,7 @@ def main(csv_path: Path) -> None:
     if min(ENTRY_FEE_BPS, TP_EXIT_FEE_BPS, OTHER_EXIT_FEE_BPS) < 0:
         raise ValueError("Fee rates cannot be negative")
 
-    candles = load_candles_from_csv(csv_path)
+    candles = load_candles_from_csv(csv_path, rsi_band=RSI_BAND)
     signals = detect_signals(candles)
     trades, invalid_target_count, open_position_count = run_backtest(
         candles,
