@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import StrEnum
 from zoneinfo import ZoneInfo
 
@@ -42,3 +43,42 @@ class Symbol(StrEnum):
     @property
     def okx_repr(self) -> str:
         return f"{self}-USDT-SWAP"
+
+
+@dataclass(slots=True)
+class Band:
+    """
+    Generic class used for ranges.
+    Easier to use for settings like RSI [25,75] or RVOL.
+    """
+    low: int | float
+    high: int | float
+
+    # alias
+    @property
+    def min(self) -> int | float:
+        return self.low
+
+    # alias
+    @property
+    def max(self) -> int | float:
+        return self.high
+
+    # alias
+    @property
+    def start(self) -> int | float:
+        return self.low
+
+    # alias
+    @property
+    def end(self) -> int | float:
+        return self.high
+
+    def __str__(self) -> str:
+        return f"[{self.low}-{self.high}]"
+
+    def is_inside(self, value) -> bool:
+        return self.min <= value <= self.max
+
+    def is_outside(self, value) -> bool:
+        return not self.is_inside(value)
