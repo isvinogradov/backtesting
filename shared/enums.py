@@ -48,6 +48,14 @@ class Symbol(StrEnum):
     AVAX = "AVAX"
     TAO = "TAO"
     HYPE = "HYPE"
+    SUI = "SUI"
+    LINK = "LINK"
+    LTC = "LTC"
+    INJ = "INJ"
+    WLD = "WLD"
+    NEAR = "NEAR"
+    ZEC = "ZEC"
+    XMR = "XMR"
 
     @property
     def usdt_pair(self) -> str:
