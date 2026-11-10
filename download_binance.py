@@ -105,9 +105,12 @@ def merge_files_into_one(ticker: Symbol) -> None:
 
 if __name__ == '__main__':
     tickers: set[Symbol] = {
-        Symbol.AVAX, Symbol.BTC, Symbol.ETH, Symbol.HYPE, Symbol.INJ, Symbol.LINK,
-        Symbol.LTC, Symbol.NEAR, Symbol.SOL, Symbol.SUI, Symbol.TAO, Symbol.WLD,
+        Symbol.AVAX, Symbol.BTC, Symbol.ETH,
+        Symbol.HYPE, Symbol.INJ, Symbol.LINK,
+        Symbol.LTC, Symbol.NEAR, Symbol.SOL,
+        Symbol.SUI, Symbol.TAO, Symbol.WLD,
         Symbol.XRP, Symbol.ZEC, Symbol.XMR,
+        Symbol.GRASS, Symbol.ENA, Symbol.SEI,
     }
     for t in tickers:
         print(f" LOADING {t} ".center(80, "*"))

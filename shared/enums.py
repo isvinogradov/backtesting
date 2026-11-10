@@ -56,6 +56,9 @@ class Symbol(StrEnum):
     NEAR = "NEAR"
     ZEC = "ZEC"
     XMR = "XMR"
+    SEI = "SEI"
+    ENA = "ENA"
+    GRASS = "GRASS"
 
     @property
     def usdt_pair(self) -> str:
