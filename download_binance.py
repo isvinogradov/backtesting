@@ -6,8 +6,8 @@ import requests
 
 from shared.enums import Symbol
 
-YEAR = 2026
-TF_RESOLUTION = "5m"
+YEAR = 2024
+TF_RESOLUTION = "1h"
 BINANCE_URL_FORMAT = \
     "https://data.binance.vision/data/futures/um/monthly/klines/{t}/{tf}/{t}-{tf}-{yyy}-{mon}.zip"
 FILE_FORMAT = "{sym}-{timeframe}-{yyyy}-{num}.{ext}"
@@ -80,6 +80,8 @@ def merge_files_into_one(ticker: Symbol) -> None:
         )
         for i in range(1, 13) if check_file_exists(ticker, i)
     ]
+    if not filenames:
+        return
     df = pd.concat(
         map(pd.read_csv, filenames),
         ignore_index=True,
@@ -103,7 +105,9 @@ def merge_files_into_one(ticker: Symbol) -> None:
 
 if __name__ == '__main__':
     tickers: set[Symbol] = {
-        Symbol.BTC,
+        Symbol.AVAX, Symbol.BTC, Symbol.ETH, Symbol.HYPE, Symbol.INJ, Symbol.LINK,
+        Symbol.LTC, Symbol.NEAR, Symbol.SOL, Symbol.SUI, Symbol.TAO, Symbol.WLD,
+        Symbol.XRP, Symbol.ZEC, Symbol.XMR,
     }
     for t in tickers:
         print(f" LOADING {t} ".center(80, "*"))
