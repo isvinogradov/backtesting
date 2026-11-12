@@ -81,6 +81,7 @@ def merge_files_into_one(ticker: Symbol) -> None:
         for i in range(1, 13) if check_file_exists(ticker, i)
     ]
     if not filenames:
+        print(f"No .csv files found to join")
         return
     df = pd.concat(
         map(pd.read_csv, filenames),
@@ -105,12 +106,13 @@ def merge_files_into_one(ticker: Symbol) -> None:
 
 if __name__ == '__main__':
     tickers: set[Symbol] = {
-        Symbol.AVAX, Symbol.BTC, Symbol.ETH,
-        Symbol.HYPE, Symbol.INJ, Symbol.LINK,
-        Symbol.LTC, Symbol.NEAR, Symbol.SOL,
-        Symbol.SUI, Symbol.TAO, Symbol.WLD,
-        Symbol.XRP, Symbol.ZEC, Symbol.XMR,
-        Symbol.GRASS, Symbol.ENA, Symbol.SEI,
+        # Symbol.AVAX, Symbol.BTC, Symbol.ETH,
+        # Symbol.HYPE, Symbol.INJ, Symbol.LINK,
+        # Symbol.LTC, Symbol.NEAR, Symbol.SOL,
+        # Symbol.SUI, Symbol.TAO, Symbol.WLD,
+        # Symbol.XRP, Symbol.ZEC, Symbol.XMR,
+        # Symbol.GRASS, Symbol.ENA, Symbol.SEI,
+        Symbol.GRAM, Symbol.TON,
     }
     for t in tickers:
         print(f" LOADING {t} ".center(80, "*"))

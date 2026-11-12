@@ -59,6 +59,9 @@ class Symbol(StrEnum):
     SEI = "SEI"
     ENA = "ENA"
     GRASS = "GRASS"
+    RENDER = "RENDER"
+    GRAM = "GRAM"
+    TON = "TON"
 
     @property
     def usdt_pair(self) -> str:
